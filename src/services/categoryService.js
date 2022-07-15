@@ -13,16 +13,11 @@ const userService = {
     return category;
   },
 
-  // ESBOÇO DO ENDPOINT GET /categories
-  // list: async () => {
-  //   const users = await connection.User.findAll({ 
-  //     attributes: {
-  //       exclude: 'password',
-  //     },
-  //   });
+  list: async () => {
+    const categories = await connection.Category.findAll();
 
-  //   return users;
-  // },
+    return categories;
+  },
 };
 
 module.exports = userService;

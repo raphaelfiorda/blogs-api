@@ -9,12 +9,11 @@ const categoryController = {
     res.status(201).json(category);
   },
 
-  // ESBOÇO DO ENDPOINT GET /categories
-  // list: async (_req, res) => {
-  //   const users = await userService.list();
+  list: async (_req, res) => {
+    const categories = await categoryService.list();
 
-  //   res.status(200).json(users);
-  // },
+    res.status(200).json(categories);
+  },
 };
 
 module.exports = categoryController;

@@ -9,6 +9,6 @@ router.use(authController.validateToken);
 
 router.post('/', categoryController.create);
 
-// router.get('/', categoryController.list);
+router.get('/', categoryController.list);
 
 module.exports = router;
