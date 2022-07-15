@@ -11,27 +11,23 @@ const userService = {
     image: Joi.string().required(),
   })),
 
-  findByEmail: async (email) => {
+  checkExists: async (email) => {
     const user = await connection.User.findOne({
       attributes: { exclude: ['createdAt', 'updatedAt'] },
       where: { email },
     });
 
-    return !!user;
-  },
-
-  create: async (data) => {
-    const userExists = this.findByEmail(data.email);
-
-    if (userExists) {
+    if (user) {
       const err = new Error('User already registered');
       err.name = 'ConflictError';
       throw err;
     }
+  },
 
-    await connection.User.create(data);
+  create: async ({ displayName, email, password, image }) => {
+    await connection.User.create({ displayName, email, password, image });
 
-    const token = jwtService.createToken(data);
+    const token = jwtService.createToken({ displayName, email });
 
     return token;
   },
