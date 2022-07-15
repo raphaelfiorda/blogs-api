@@ -4,7 +4,7 @@ const userController = {
   create: async (req, res) => {
     const { displayName, email, password, image } = await userService.validateBody(req.body);
 
-    await userService.checkExists(email);
+    await userService.checkConflict(email);
 
     const token = await userService.create({ displayName, email, password, image });
 
@@ -15,6 +15,13 @@ const userController = {
     const users = await userService.list();
 
     res.status(200).json(users);
+  },
+
+  get: async (req, res) => {
+    const { id } = await userService.validateParamsId(req.params);
+    const user = await userService.get(id);
+
+    res.status(200).json(user);
   },
 };
 

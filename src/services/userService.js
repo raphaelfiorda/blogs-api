@@ -11,14 +11,34 @@ const userService = {
     image: Joi.string().required(),
   })),
 
-  checkExists: async (email) => {
-    const user = await connection.User.findOne({ where: { email } });
+  validateParamsId: runSchema(Joi.object({
+    id: Joi.number().required().integer().positive(),
+  })),
 
+  checkConflict: async (email) => {
+    const user = await connection.User.findOne({ where: { email } });
+    
     if (user) {
       const err = new Error('User already registered');
       err.name = 'ConflictError';
       throw err;
     }
+  },
+  
+  get: async (id) => {
+    const user = await connection.User.findByPk(id, {
+      attributes: {
+        exclude: 'password',
+      },
+    });
+
+    if (!user) {
+      const err = new Error('User does not exist');
+      err.name = 'NotFoundError';
+      throw err;
+    }
+
+    return user;
   },
 
   list: async () => {
