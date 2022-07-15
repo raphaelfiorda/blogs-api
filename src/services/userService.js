@@ -21,6 +21,16 @@ const userService = {
     }
   },
 
+  list: async () => {
+    const users = await connection.User.findAll({ 
+      attributes: {
+        exclude: 'password',
+      },
+    });
+
+    return users;
+  },
+
   create: async ({ displayName, email, password, image }) => {
     await connection.User.create({ displayName, email, password, image });
 
