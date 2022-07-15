@@ -12,10 +12,7 @@ const userService = {
   })),
 
   checkExists: async (email) => {
-    const user = await connection.User.findOne({
-      attributes: { exclude: ['createdAt', 'updatedAt'] },
-      where: { email },
-    });
+    const user = await connection.User.findOne({ where: { email } });
 
     if (user) {
       const err = new Error('User already registered');
