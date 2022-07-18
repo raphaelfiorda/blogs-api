@@ -8,6 +8,12 @@ const jwtService = {
     return token;
   },
 
+  decodeToken: (token) => {
+    const { data } = jwt.decode(token, { json: true });
+
+    return data;
+  },
+
   validateToken: (token) => {
     if (!token) {
       const err = new Error('Token not found');

@@ -11,7 +11,7 @@ const createPostCategory = (sequelize, DataTypes) => {
       primaryKey: true,
     }
   }, {
-    tableName: 'PostsCategories',
+    tableName: 'PostCategories',
     timestamps: false,
   });
 
