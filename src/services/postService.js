@@ -69,6 +69,28 @@ const postService = {
 
     return posts;
   },
+
+  get: async (id) => {
+    const post = await connection.BlogPost.findByPk(id, {
+      include: [{
+        model: connection.User,
+        as: 'user',
+        attributes: { exclude: ['password'] },
+      }, {
+        model: connection.Category,
+        as: 'categories',
+        through: { attributes: [] }, // [] exclui da query os dados da junction table
+      }],
+    });
+
+    if (!post) {
+      const err = new Error('Post does not exist');
+      err.name = 'NotFoundError';
+      throw err;
+    }
+
+    return post;
+  },
 };
 
 module.exports = postService;

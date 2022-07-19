@@ -11,4 +11,6 @@ router.post('/', postController.create);
 
 router.get('/', postController.list);
 
+router.get('/:id', postController.get);
+
 module.exports = router;
