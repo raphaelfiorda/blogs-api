@@ -9,4 +9,6 @@ router.use(authController.validateToken);
 
 router.post('/', postController.create);
 
+router.get('/', postController.list);
+
 module.exports = router;

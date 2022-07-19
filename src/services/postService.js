@@ -53,11 +53,22 @@ const postService = {
     return post;
   },
 
-  // list: async () => {
-  //   const categories = await connection.Category.findAll();
+  // Eager loading
+  list: async () => {
+    const posts = await connection.BlogPost.findAll({
+      include: [{
+        model: connection.User,
+        as: 'user',
+        attributes: { exclude: ['password'] },
+      }, {
+        model: connection.Category,
+        as: 'categories',
+        through: { attributes: [] }, // [] exclui da query os dados da junction table
+      }],
+    });
 
-  //   return categories;
-  // },
+    return posts;
+  },
 };
 
 module.exports = postService;
