@@ -15,4 +15,6 @@ router.get('/:id', postController.get);
 
 router.put('/:id', postController.edit);
 
+router.delete('/:id', postController.delete);
+
 module.exports = router;

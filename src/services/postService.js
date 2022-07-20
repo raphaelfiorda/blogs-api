@@ -2,6 +2,7 @@ const Joi = require('joi');
 const { Op } = require('sequelize');
 const connection = require('../database/models');
 const jwtService = require('./jwtService');
+const errorThrower = require('./helpers');
 
 const postService = {
   validateBody: (data) => {
@@ -37,10 +38,16 @@ const postService = {
     const { count } = await connection.User.findAndCountAll({ where: { id: categoryIds } });
     
     if (count !== categoryIds.length) {
-      const err = new Error('"categoryIds" not found');
-      err.name = 'ValidationError';
-      throw err;
+      return errorThrower('"categoryIds" not found', 'ValidationError');
     }
+  },
+
+  checkUserAllowance: async ({ userId, id }) => {
+    const isUserAllowed = await connection.BlogPost.findOne({
+      where: { [Op.and]: [{ userId }, { id }] },
+    });
+
+    if (!isUserAllowed) errorThrower('Unauthorized user', 'UnauthorizedError');
   },
 
   getUserId: async (token) => {
@@ -99,28 +106,20 @@ const postService = {
       }],
     });
 
-    if (!post) {
-      const err = new Error('Post does not exist');
-      err.name = 'NotFoundError';
-      throw err;
-    }
+    if (!post) errorThrower('Post does not exist', 'NotFoundError');
 
     return post;
   },
 
-  edit: async ({ id, title, content, userId }) => {
-    const isUserAllowed = await connection.BlogPost.findOne({
-      where: { [Op.and]: [{ userId }, { id }] },
-    });
-
-    if (!isUserAllowed) {
-      const err = new Error('Unauthorized user');
-      err.name = 'UnauthorizedError';
-      throw err;
-    }
-    
+  edit: async ({ id, title, content }) => {
     await connection.BlogPost.update({ title, content },
       { where: { id }, fields: ['title', 'content'] });
+  },
+
+  delete: async (id) => {
+    await connection.BlogPost.destroy({
+      where: { id },
+    });
   },
 };
 

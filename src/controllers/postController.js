@@ -33,11 +33,27 @@ const postController = {
     const userId = await postService.getUserId(authorization);
     const { id } = req.params;
 
-    await postService.edit({ id, title, content, userId });
+    await postService.checkUserAllowance({ userId, id });
+
+    await postService.edit({ id, title, content });
 
     const editedPost = await postService.get(id);
 
     res.status(200).json(editedPost);
+  },
+
+  delete: async (req, res) => {
+    const { authorization } = req.headers;
+    const userId = await postService.getUserId(authorization);
+    const { id } = req.params;
+
+    await postService.get(id);
+
+    await postService.checkUserAllowance({ userId, id });
+
+    await postService.delete(id);
+
+    res.sendStatus(204);
   },
 };
 
