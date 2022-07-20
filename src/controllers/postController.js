@@ -1,11 +1,12 @@
 const postService = require('../services/postService');
+const userService = require('../services/userService');
 
 const postController = {
   create: async (req, res) => {
     const { title, content, categoryIds } = await postService.validateBody(req.body);
     await postService.checkCategoryExists(categoryIds);
     const { authorization } = req.headers;
-    const userId = await postService.getUserId(authorization);
+    const userId = await userService.getUserId(authorization);
 
     const post = await postService.create({ title, content, categoryIds, userId });
 
@@ -30,7 +31,7 @@ const postController = {
     const { title, content } = await postService
       .validateBodyLessCategory(req.body);
     const { authorization } = req.headers;
-    const userId = await postService.getUserId(authorization);
+    const userId = await userService.getUserId(authorization);
     const { id } = req.params;
 
     await postService.checkUserAllowance({ userId, id });
@@ -44,7 +45,7 @@ const postController = {
 
   delete: async (req, res) => {
     const { authorization } = req.headers;
-    const userId = await postService.getUserId(authorization);
+    const userId = await userService.getUserId(authorization);
     const { id } = req.params;
 
     await postService.get(id);

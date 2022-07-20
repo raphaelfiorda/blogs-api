@@ -2,6 +2,7 @@ const Joi = require('joi');
 const connection = require('../database/models');
 const jwtService = require('./jwtService');
 const runSchema = require('./schemaValidator');
+const errorThrower = require('./helpers');
 
 const userService = {
   validateBody: runSchema(Joi.object({
@@ -18,11 +19,18 @@ const userService = {
   checkConflict: async (email) => {
     const user = await connection.User.findOne({ where: { email } });
     
-    if (user) {
-      const err = new Error('User already registered');
-      err.name = 'ConflictError';
-      throw err;
-    }
+    if (user) errorThrower('User already registered', 'ConflictError');
+  },
+
+  getUserId: async (token) => {
+    const { email } = jwtService.decodeToken(token);
+
+    const { id } = await connection.User.findOne({
+      attributes: ['id'],
+      where: { email },
+    });
+
+    return id;
   },
   
   get: async (id) => {
@@ -32,11 +40,7 @@ const userService = {
       },
     });
 
-    if (!user) {
-      const err = new Error('User does not exist');
-      err.name = 'NotFoundError';
-      throw err;
-    }
+    if (!user) errorThrower('User does not exist', 'NotFoundError');
 
     return user;
   },
@@ -57,6 +61,12 @@ const userService = {
     const token = jwtService.createToken({ displayName, email });
 
     return token;
+  },
+
+  delete: async (id) => {
+    await connection.User.destroy({
+      where: { id },
+    });
   },
 };
 

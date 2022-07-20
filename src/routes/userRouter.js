@@ -13,4 +13,6 @@ router.get('/', userController.list);
 
 router.get('/:id', userController.get);
 
+router.delete('/me', userController.delete);
+
 module.exports = router;

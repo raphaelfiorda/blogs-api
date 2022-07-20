@@ -23,6 +23,15 @@ const userController = {
 
     res.status(200).json(user);
   },
+
+  delete: async (req, res) => {
+    const { authorization } = req.headers;
+    const id = await userService.getUserId(authorization);
+
+    await userService.delete(id);
+
+    res.sendStatus(204);
+  },
 };
 
 module.exports = userController;

@@ -1,7 +1,6 @@
 const Joi = require('joi');
 const { Op } = require('sequelize');
 const connection = require('../database/models');
-const jwtService = require('./jwtService');
 const errorThrower = require('./helpers');
 
 const postService = {
@@ -48,17 +47,6 @@ const postService = {
     });
 
     if (!isUserAllowed) errorThrower('Unauthorized user', 'UnauthorizedError');
-  },
-
-  getUserId: async (token) => {
-    const { email } = jwtService.decodeToken(token);
-
-    const { id } = await connection.User.findOne({
-      attributes: ['id'],
-      where: { email },
-    });
-
-    return id;
   },
   
   create: async ({ title, content, categoryIds, userId }) => {
