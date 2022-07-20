@@ -13,4 +13,6 @@ router.get('/', postController.list);
 
 router.get('/:id', postController.get);
 
+router.put('/:id', postController.edit);
+
 module.exports = router;

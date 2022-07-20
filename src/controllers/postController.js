@@ -5,9 +5,9 @@ const postController = {
     const { title, content, categoryIds } = await postService.validateBody(req.body);
     await postService.checkCategoryExists(categoryIds);
     const { authorization } = req.headers;
-    const { id } = await postService.getUserId(authorization);
+    const userId = await postService.getUserId(authorization);
 
-    const post = await postService.create({ title, content, categoryIds, id });
+    const post = await postService.create({ title, content, categoryIds, userId });
 
     res.status(201).json(post);
   },
@@ -24,6 +24,20 @@ const postController = {
     const post = await postService.get(id);
 
     res.status(200).json(post);
+  },
+
+  edit: async (req, res) => {
+    const { title, content } = await postService
+      .validateBodyLessCategory(req.body);
+    const { authorization } = req.headers;
+    const userId = await postService.getUserId(authorization);
+    const { id } = req.params;
+
+    await postService.edit({ id, title, content, userId });
+
+    const editedPost = await postService.get(id);
+
+    res.status(200).json(editedPost);
   },
 };
 

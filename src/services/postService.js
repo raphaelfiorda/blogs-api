@@ -1,4 +1,5 @@
 const Joi = require('joi');
+const { Op } = require('sequelize');
 const connection = require('../database/models');
 const jwtService = require('./jwtService');
 
@@ -9,6 +10,21 @@ const postService = {
       content: Joi.string().required(),
       categoryIds: Joi.array().items(Joi.number()).required(),
     });
+
+    const { error, value } = schema.validate(data);
+    if (error) {
+      error.message = 'Some required fields are missing';
+      throw error;
+    }
+    return value;
+  },
+
+  validateBodyLessCategory: (data) => {
+    const schema = Joi.object({
+      title: Joi.string().required(),
+      content: Joi.string().required(),
+    });
+
     const { error, value } = schema.validate(data);
     if (error) {
       error.message = 'Some required fields are missing';
@@ -30,16 +46,16 @@ const postService = {
   getUserId: async (token) => {
     const { email } = jwtService.decodeToken(token);
 
-    const userId = await connection.User.findOne({
+    const { id } = await connection.User.findOne({
       attributes: ['id'],
       where: { email },
     });
 
-    return userId;
+    return id;
   },
   
-  create: async ({ title, content, categoryIds, id }) => {
-    const post = await connection.BlogPost.create({ title, content, userId: id });
+  create: async ({ title, content, categoryIds, userId }) => {
+    const post = await connection.BlogPost.create({ title, content, userId });
 
     const catPostArray = await categoryIds.map((catId) => (
       {
@@ -90,6 +106,21 @@ const postService = {
     }
 
     return post;
+  },
+
+  edit: async ({ id, title, content, userId }) => {
+    const isUserAllowed = await connection.BlogPost.findOne({
+      where: { [Op.and]: [{ userId }, { id }] },
+    });
+
+    if (!isUserAllowed) {
+      const err = new Error('Unauthorized user');
+      err.name = 'UnauthorizedError';
+      throw err;
+    }
+    
+    await connection.BlogPost.update({ title, content },
+      { where: { id }, fields: ['title', 'content'] });
   },
 };
 
