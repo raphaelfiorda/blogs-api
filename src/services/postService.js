@@ -99,6 +99,24 @@ const postService = {
     return post;
   },
 
+  search: async (q) => {
+    const posts = await connection.BlogPost.findAll({
+      where: {
+        [Op.or]: { title: { [Op.like]: `%${q}%` }, content: { [Op.like]: `%${q}%` } },
+      },
+      include: [{
+        model: connection.User,
+        as: 'user',
+        attributes: { exclude: ['password'] },
+      }, {
+        model: connection.Category,
+        as: 'categories',
+        through: { attributes: [] }, // [] exclui da query os dados da junction table
+      }],
+    });
+    return posts;
+  },
+
   edit: async ({ id, title, content }) => {
     await connection.BlogPost.update({ title, content },
       { where: { id }, fields: ['title', 'content'] });

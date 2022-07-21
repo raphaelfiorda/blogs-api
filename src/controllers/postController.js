@@ -27,6 +27,14 @@ const postController = {
     res.status(200).json(post);
   },
 
+  search: async (req, res) => {
+    const { q } = req.query;
+
+    const posts = await postService.search(q);
+
+    res.status(200).json(posts);
+  },
+
   edit: async (req, res) => {
     const { title, content } = await postService
       .validateBodyLessCategory(req.body);

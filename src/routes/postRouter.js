@@ -11,6 +11,8 @@ router.post('/', postController.create);
 
 router.get('/', postController.list);
 
+router.get('/search', postController.search);
+
 router.get('/:id', postController.get);
 
 router.put('/:id', postController.edit);
