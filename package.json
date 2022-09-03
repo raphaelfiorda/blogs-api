@@ -7,7 +7,7 @@
   "engineStrict": true,
   "private": true,
   "dependencies": {
-    "dotenv": "8.2.0",
+    "dotenv": "8.6.0",
     "express": "4.17.1",
     "joi": "^17.6.0",
     "jsonwebtoken": "^8.5.1",
